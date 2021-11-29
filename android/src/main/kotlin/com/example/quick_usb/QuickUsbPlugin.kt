@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.*
+import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -141,6 +142,25 @@ class QuickUsbPlugin : FlutterPlugin, MethodCallHandler {
         val actualLength = connection.bulkTransfer(endpoint, buffer, buffer.count(), timeout)
         result.success(buffer.take(actualLength))
       }
+      "bulkTransferIn2" -> {
+        val device = usbDevice ?: return result.error("IllegalState", "usbDevice null", null)
+        val connection = usbDeviceConnection ?: return result.error("IllegalState", "usbDeviceConnection null", null)
+        val configurationIndex = call.argument<Int>("configuration")!!
+        val interfaceIndex = call.argument<Int>("interface")!!
+        val endpointMap = call.argument<Map<String, Any>>("endpoint")!!
+        val maxLength = call.argument<Int>("maxLength")!!
+        val endpoint = device.findEndpoint(
+          configurationIndex = configurationIndex,
+          interfaceIndex = interfaceIndex,
+          endpointNumber = endpointMap["endpointNumber"] as Int,
+          direction = endpointMap["direction"] as Int
+        )
+        val timeout = call.argument<Int>("timeout")!!
+        // TODO Check [UsbDeviceConnection.bulkTransfer] API
+        val buffer = ByteArray(maxLength)
+        val actualLength = connection.bulkTransfer(endpoint, buffer, buffer.count(), timeout)
+        result.success(buffer.take(actualLength))
+      }
       "bulkTransferOut" -> {
         val device = usbDevice ?: return result.error("IllegalState", "usbDevice null", null)
         val connection = usbDeviceConnection ?: return result.error("IllegalState", "usbDeviceConnection null", null)
@@ -202,6 +222,24 @@ fun UsbDevice.findInterface(id: Int, alternateSetting: Int): UsbInterface? {
     }
   }
   return null
+}
+
+fun UsbDevice.findEndpoint(
+  configurationIndex: Int,
+  interfaceIndex: Int,
+  endpointNumber: Int,
+  direction: Int
+): UsbEndpoint? {
+  val config = getConfiguration(configurationIndex)
+  Log.d(this.javaClass.name, "configuration: $config")
+  val iface = config.getInterface(interfaceIndex)
+  Log.d(this.javaClass.name, "interface: $iface")
+  val endpoint = iface.getEndpoint(endpointNumber)
+  Log.d(this.javaClass.name, "endpoint: $endpoint")
+  return if (endpoint.direction == direction)
+    endpoint
+  else
+    null
 }
 
 fun UsbDevice.findEndpoint(endpointNumber: Int, direction: Int): UsbEndpoint? {

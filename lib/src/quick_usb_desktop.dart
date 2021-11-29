@@ -207,6 +207,11 @@ class _QuickUsbDesktop extends QuickUsbPlatform {
   }
 
   @override
+  Future<Uint8List> bulkTransferIn2(int configuration, int interface, UsbEndpoint endpoint, int maxLength, int timeout) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<Uint8List> bulkTransferIn(
       UsbEndpoint endpoint, int maxLength, int timeout) async {
     assert(_devHandle != null, 'Device not open');
