@@ -69,6 +69,12 @@ class QuickUsb {
           {int timeout = 1000}) =>
       _platform.bulkTransferIn(endpoint, maxLength, timeout);
 
+  static Future<Uint8List> bulkTransferIn2(
+          int configuration, int interface, UsbEndpoint endpoint, int maxLength,
+          {int timeout = 1000}) =>
+      _platform.bulkTransferIn2(
+          configuration, interface, endpoint, maxLength, timeout);
+
   static Future<int> bulkTransferOut(UsbEndpoint endpoint, Uint8List data,
           {int timeout = 1000}) =>
       _platform.bulkTransferOut(endpoint, data, timeout);
