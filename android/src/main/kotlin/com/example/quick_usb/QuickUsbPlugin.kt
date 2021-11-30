@@ -167,7 +167,9 @@ class QuickUsbPlugin : FlutterPlugin, MethodCallHandler {
         val endpointMap = call.argument<Map<String, Any>>("endpoint")!!
         val data = call.argument<ByteArray>("data")!!
         val timeout = call.argument<Int>("timeout")!!
-        val endpoint = device.findEndpoint(endpointMap["endpointNumber"] as Int, endpointMap["direction"] as Int)
+        val endpoint = device.findEndpoint(
+          endpointNumber= endpointMap["endpointNumber"] as Int,
+          direction= endpointMap["direction"] as Int)
         // Check [UsbDeviceConnection.bulkTransfer] API
         val dataSplit = data.asList().windowed(16384, 16384, true).map { it.toByteArray() }
         var sum = 0
