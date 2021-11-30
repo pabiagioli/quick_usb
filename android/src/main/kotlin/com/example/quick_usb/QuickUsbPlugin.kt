@@ -149,7 +149,7 @@ class QuickUsbPlugin : FlutterPlugin, MethodCallHandler {
         val interfaceIndex = call.argument<Int>("interface")!!
         val endpointMap = call.argument<Map<String, Any>>("endpoint")!!
         val maxLength = call.argument<Int>("maxLength")!!
-        val endpoint = device.findEndpoint(
+        val endpoint = device.findEndpoint2(
           configurationIndex = configurationIndex,
           interfaceIndex = interfaceIndex,
           endpointNumber = endpointMap["endpointNumber"] as Int,
@@ -224,7 +224,7 @@ fun UsbDevice.findInterface(id: Int, alternateSetting: Int): UsbInterface? {
   return null
 }
 
-fun UsbDevice.findEndpoint(
+fun UsbDevice.findEndpoint2(
   configurationIndex: Int,
   interfaceIndex: Int,
   endpointNumber: Int,
